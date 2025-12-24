@@ -19,9 +19,10 @@ const SlotMachine = ({ difficulty, isStop, onResult }) => {
 
 	// 難易度ごとの設定
 	const config = {
-		easy: { count: 5, speed: 3 }, // ゆっくり
+		easy: { count: 3, speed: 4 }, // ゆっくり
 		mid: { count: 8, speed: 8 }, // はやめ
 		hard: { count: 10, speed: 10 }, // 速い
+		expert: { count: 10, speed: 14 }, // 速い
 	};
 
 	const { count, speed } = config[difficulty];
@@ -165,6 +166,8 @@ const App = () => {
 						setPendingDifficulty("mid");
 					} else if (difficulty === "mid") {
 						setPendingDifficulty("hard");
+					} else if (difficulty === "hard") {
+						setPendingDifficulty("expert");
 					}
 				}
 			} else {
@@ -227,13 +230,39 @@ const App = () => {
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
+	const handleDifficultyChange = (e) => {
+		const newDifficulty = e.target.value;
+		setDifficulty(newDifficulty);
+		setPendingDifficulty(null);
+		setConsecutiveWins(0); // 手動変更時はリセット
+	};
+
 	return (
 		<>
 			<div>
 				<h3>最高回数: {maxScore}回</h3>
-				<p>
-					現在の難易度: {difficulty.toUpperCase()} (連勝: {consecutiveWins})
-				</p>
+				<div style={{ marginBottom: "0.5em" }}>
+					<label htmlFor="difficulty-select" style={{ marginRight: "0.5em" }}>
+						難易度:
+					</label>
+					<select
+						id="difficulty-select"
+						value={difficulty}
+						onChange={handleDifficultyChange}
+						disabled={isStop} // スタート中（isStop=true）は変更不可
+						style={{
+							padding: "0.2em",
+							fontSize: "1rem",
+							fontFamily: "inherit",
+						}}
+					>
+						<option value="easy">Easy</option>
+						<option value="mid">Mid</option>
+						<option value="hard">Hard</option>
+						<option value="expert">Expert</option>
+					</select>
+					<span style={{ marginLeft: "0.5em" }}>(連勝: {consecutiveWins})</span>
+				</div>
 			</div>
 			<div
 				style={{
